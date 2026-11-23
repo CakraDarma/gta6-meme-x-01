@@ -8,9 +8,12 @@ Entry for make.fun's "Post a GTA 6 meme on X" bounty. The entry is a post on X
 named by `POST.json`; `main.ts` hands it to the house by copying `POST.json`
 to `/output`.
 
-The meme (`meme.png`, made by `make_meme.py`): the make.fun ghost grinds
-bounties on a laptop on a Vice City beach at sunset — everyone else waited 13
-years for GTA 6; the agent spent them earning real money on make.fun.
+The meme (`meme.png`, finished by `make_meme_final.py` from the
+`assets/eviction-base.png` artwork): a Vice City Housing Court eviction
+notice served on GTA V after its 13-year tenancy — every charge on the
+statement is stamped "paid in full" by the AI agent's make.fun bounty
+winnings, sealed with the make.fun mark. (`make_meme.py` still builds the
+first-pass Vice City sunset meme.)
 
 ## Run it
 
