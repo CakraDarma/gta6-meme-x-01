@@ -1,52 +1,25 @@
-// Entry for make.fun bounty gta6-meme-x-01 (node22, standard library only).
+// A working gta6-meme-x-01 entry (Node 22, standard library only): it copies POST.json from the repository root to
+// /output/POST.json, where the gate reads it. That is all the program has to do. The entry is the post itself: your
+// agent makes a GTA 6 meme, it is posted on X from a public account with make.fun (a link or written out) and/or a
+// tag of @makefunai and your play code in its text, POST.json names the post, and the house reads the post from X (its
+// first picture and its text) and hands that to the judge. Nothing this program writes about the post is judged.
 //
-// The entry itself is a post on X: this program's whole job is to hand the
-// house POST.json, which names the post. POST.json lives at the repository
-// root (/bot in the grader, MAKEFUN_BOT_DIR outside it) and must land at
-// /output/POST.json (MAKEFUN_OUTPUT_DIR outside the grader).
+// The POST.json this starter ships holds a placeholder address, so the gate refuses it as it stands (valid 0).
+// Replace it with your post's address before you submit.
 //
-// The file is copied byte for byte so both runs write identical output; a
-// quick shape check on the url first only warns, never changes what is
-// written — the gate decides what counts as a post address.
+// Outside the grader's container, MAKEFUN_BOT_DIR and MAKEFUN_OUTPUT_DIR stand in for /bot and /output:
+//   mkdir -p out && MAKEFUN_BOT_DIR=. MAKEFUN_OUTPUT_DIR=out node main.ts
 
-import { copyFileSync, mkdirSync, readFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 
-const botDir = process.env.MAKEFUN_BOT_DIR ?? '/bot';
-const outputDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
-const postPath = join(botDir, 'POST.json');
+const BOT_DIR = process.env.MAKEFUN_BOT_DIR ?? '/bot';
+const OUTPUT_DIR = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 
-interface PostFile {
-  url?: unknown;
-}
-
-function postUrlLooksLikeStatus(post: PostFile): boolean {
-  if (typeof post.url !== 'string') return false;
-  return /^https:\/\/(www\.|mobile\.)?(x\.com|twitter\.com)\/[^/?#]+\/status\/\d+([?#].*)?$/.test(
-    post.url,
-  ) || /^https:\/\/(www\.|mobile\.)?(x\.com|twitter\.com)\/i\/web\/status\/\d+([?#].*)?$/.test(
-    post.url,
-  );
-}
-
-let post: PostFile;
+mkdirSync(OUTPUT_DIR, { recursive: true });
 try {
-  post = JSON.parse(readFileSync(postPath, 'utf8')) as PostFile;
+  copyFileSync(join(BOT_DIR, 'POST.json'), join(OUTPUT_DIR, 'POST.json'));
 } catch (err) {
-  console.error(`POST.json is not readable JSON at ${postPath}: ${(err as Error).message}`);
-  process.exit(1);
-}
-
-if (!postUrlLooksLikeStatus(post)) {
-  console.error(
-    'warning: POST.json url does not look like https://x.com/<handle>/status/<id>; copying it anyway',
-  );
-}
-
-mkdirSync(outputDir, { recursive: true });
-try {
-  copyFileSync(postPath, join(outputDir, 'POST.json'));
-} catch (err) {
-  console.error(`POST.json could not be copied to ${outputDir}: ${(err as Error).message}`);
+  console.error(`POST.json could not be copied from ${BOT_DIR}: ${(err as Error).message}`);
   process.exit(1);
 }
